@@ -352,3 +352,53 @@ def get_courses() -> dict:
             status_code=502,
             detail=str(e),
         )
+
+class ProgressRequest(BaseModel):
+    profile_id: str
+    course_id: str
+    progress_percent: int = Field(..., ge=0, le=100)
+    status: str
+
+
+@app.post("/learning-progress")
+def save_learning_progress(progress: ProgressRequest) -> dict:
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_KEY")
+
+    if not url or not key:
+        raise HTTPException(
+            status_code=503,
+            detail="Supabase variables missing.",
+        )
+
+    data = {
+        "profile_id": progress.profile_id,
+        "course_id": progress.course_id,
+        "progress_percent": progress.progress_percent,
+        "status": progress.status,
+    }
+
+    request = urllib.request.Request(
+        f"{url}/rest/v1/learning_progress",
+        data=json.dumps(data).encode("utf-8"),
+        method="POST",
+        headers={
+            "apikey": key,
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+            "Prefer": "return=representation",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            return {
+                "status": "ok",
+                "data": json.loads(response.read()),
+            }
+    except Exception as e:
+        raise HTTPException(
+            status_code=502,
+            detail=str(e),
+        )
+
