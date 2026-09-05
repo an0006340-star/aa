@@ -6,6 +6,7 @@ import os
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from google import genai
 from google.genai import types
 from pydantic import BaseModel, Field, ValidationError, field_validator
@@ -13,6 +14,12 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Capacity Connect API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 GEMINI_MODEL = "gemini-3.6-flash"
 

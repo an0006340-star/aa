@@ -3,7 +3,7 @@ modules = ["nodejs-24", "python-base-3.13"]
 run = ["uv", "run", "--project", ".", "python", "artifacts/api-server/main.py"]
 
 [[ports]]
-internalPort = 8080
+localPort = 8080
 externalPort = 80
 
 [deployment]
