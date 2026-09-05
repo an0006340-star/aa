@@ -514,3 +514,125 @@ def get_assessment_results(profile_id: str) -> dict:
             status_code=502,
             detail=str(e),
         )
+
+class AssessmentRequest(BaseModel):
+    course_title: str
+    description: str = ""
+    skills: str = ""
+    difficulty: str = "Beginner"
+    num_questions: int = 10
+
+
+@app.post("/generate-assessment")
+def generate_assessment(request: AssessmentRequest):
+    api_key = os.getenv("GOOGLE_API_KEY")
+
+    if not api_key:
+        raise HTTPException(
+            status_code=503,
+            detail="Google API key is not configured."
+        )
+
+    prompt = f"""
+You are an intelligent assessment generator for a professional
+capacity-building and learning platform.
+
+Generate exactly {request.num_questions} multiple-choice questions.
+
+Course:
+{request.course_title}
+
+Description:
+{request.description}
+
+Skills:
+{request.skills}
+
+Difficulty:
+{request.difficulty}
+
+Requirements:
+- Each question must have exactly 4 options.
+- Only one option must be correct.
+- Questions must be relevant to the course.
+- Mix conceptual and practical questions.
+- Avoid duplicate questions.
+- Provide a short explanation for the correct answer.
+
+Return ONLY valid JSON in this exact format:
+
+{{
+  "questions": [
+    {{
+      "question": "Question text",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_answer": 0,
+      "explanation": "Short explanation"
+    }}
+  ]
+}}
+
+The correct_answer must be 0, 1, 2, or 3 corresponding to
+the correct option's position.
+"""
+
+    try:
+        url = (
+            "https://generativelanguage.googleapis.com/"
+            "v1beta/models/gemini-2.0-flash:generateContent"
+            f"?key={api_key}"
+        )
+
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": prompt}
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.4,
+                "responseMimeType": "application/json"
+            }
+        }
+
+        data = json.dumps(payload).encode("utf-8")
+
+        http_request = urllib.request.Request(
+            url,
+            data=data,
+            headers={
+                "Content-Type": "application/json"
+            },
+            method="POST"
+        )
+
+        with urllib.request.urlopen(
+            http_request,
+            timeout=30
+        ) as response:
+            result = json.loads(response.read())
+
+        text = (
+            result["candidates"][0]["content"]["parts"][0]["text"]
+        )
+
+        questions = json.loads(text)
+
+        return {
+            "status": "ok",
+            "course": request.course_title,
+            "data": questions
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Assessment generation failed: {str(e)}"
+        )
