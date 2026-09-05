@@ -186,3 +186,52 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=int(os.getenv("PORT", "5000")),
     )
+
+class ProfileRequest(BaseModel):
+    full_name: str
+    email: str
+    department: str
+    role: str
+    experience_years: int
+    skills: list[str]
+    career_goal: str
+
+
+@app.post("/profiles")
+def create_profile(profile: ProfileRequest) -> dict:
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_KEY")
+
+    if not url or not key:
+        raise HTTPException(status_code=503, detail="Supabase variables missing.")
+
+    data = {
+        "full_name": profile.full_name,
+        "email": profile.email,
+        "department": profile.department,
+        "role": profile.role,
+        "experience_years": profile.experience_years,
+        "skills": ", ".join(profile.skills),
+        "career_goal": profile.career_goal,
+    }
+
+    request = urllib.request.Request(
+        f"{url}/rest/v1/profiles",
+        data=json.dumps(data).encode("utf-8"),
+        method="POST",
+        headers={
+            "apikey": key,
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+            "Prefer": "return=representation",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            return {
+                "status": "ok",
+                "data": json.loads(response.read()),
+            }
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=str(e))
