@@ -135,3 +135,13 @@ def analyze_skills(request: SkillAnalysisRequest) -> SkillAnalysisResponse:
             status_code=502,
             detail="Unable to analyze skills right now.",
         ) from None
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", "5000")),
+    )

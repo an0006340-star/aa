@@ -1,6 +1,6 @@
 kind = "api"
 previewPath = "/api"
-title = "API Server"
+title = "Capacity Connect API"
 version = "1.0.0"
 id = "3B4_FFSkEVBkAeYMFRJ2e"
 
@@ -21,10 +21,9 @@ args = ["uv", "run", "--project", ".", "python", "-m", "compileall", "artifacts/
 NODE_ENV = "production"
 
 [services.production.run]
-args = ["uv", "run", "--project", ".", "uvicorn", "--app-dir", "artifacts/api-server", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+args = ["uv", "run", "--project", ".", "python", "artifacts/api-server/main.py"]
 
 [services.production.run.env]
-PORT = "8080"
 NODE_ENV = "production"
 
 [services.production.health.startup]
