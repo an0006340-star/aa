@@ -266,3 +266,58 @@ def get_profiles() -> dict:
             status_code=502,
             detail=str(e),
         )
+
+class AIRecommendationRequest(BaseModel):
+    profile_id: str
+    strengths: list[str]
+    skill_gaps: list[str]
+    recommended_competency: str
+    recommended_courses: list[str]
+    learning_path: list[str]
+
+
+@app.post("/ai-recommendations")
+def save_ai_recommendation(
+    recommendation: AIRecommendationRequest,
+) -> dict:
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_KEY")
+
+    if not url or not key:
+        raise HTTPException(
+            status_code=503,
+            detail="Supabase variables missing.",
+        )
+
+    data = {
+        "profile_id": recommendation.profile_id,
+        "strengths": ", ".join(recommendation.strengths),
+        "skill_gaps": ", ".join(recommendation.skill_gaps),
+        "recommended_competency": recommendation.recommended_competency,
+        "recommended_courses": ", ".join(recommendation.recommended_courses),
+        "learning_path": ", ".join(recommendation.learning_path),
+    }
+
+    request = urllib.request.Request(
+        f"{url}/rest/v1/ai_recommendations",
+        data=json.dumps(data).encode("utf-8"),
+        method="POST",
+        headers={
+            "apikey": key,
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+            "Prefer": "return=representation",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            return {
+                "status": "ok",
+                "data": json.loads(response.read()),
+            }
+    except Exception as e:
+        raise HTTPException(
+            status_code=502,
+            detail=str(e),
+        )
