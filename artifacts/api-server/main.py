@@ -235,3 +235,34 @@ def create_profile(profile: ProfileRequest) -> dict:
             }
     except Exception as e:
         raise HTTPException(status_code=502, detail=str(e))
+
+@app.get("/profiles")
+def get_profiles() -> dict:
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_KEY")
+
+    if not url or not key:
+        raise HTTPException(
+            status_code=503,
+            detail="Supabase variables missing.",
+        )
+
+    request = urllib.request.Request(
+        f"{url}/rest/v1/profiles?select=*",
+        headers={
+            "apikey": key,
+            "Authorization": f"Bearer {key}",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            return {
+                "status": "ok",
+                "data": json.loads(response.read()),
+            }
+    except Exception as e:
+        raise HTTPException(
+            status_code=502,
+            detail=str(e),
+        )
