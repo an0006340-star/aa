@@ -1,0 +1,6 @@
+{
+  "name": "Capacity Connect",
+  "description": "Digital Capacity Building and Learning Management Portal for organizational training, competency development, personalized pathways, and knowledge sharing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
