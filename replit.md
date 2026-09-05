@@ -8,12 +8,14 @@ Capacity Connect's beginner-friendly FastAPI backend.
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `GET /health` — returns `{ "status": "ok" }`
+- `POST /analyze-skills` — uses Gemini to analyze skills and suggest a learning path
 
 ## Stack
 
 - pnpm workspaces and Python 3.13
 - API: FastAPI served by Uvicorn
-- No database or AI dependencies yet
+- AI: official Google GenAI Python SDK with `GOOGLE_API_KEY`
+- No database yet
 
 ## Where things live
 

@@ -1,0 +1,1 @@
+- [Gemini model availability](gemini-model-availability.md) — confirm the live API's supported Flash model when a previously valid model is rejected.
