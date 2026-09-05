@@ -1,0 +1,10 @@
+{
+  "name": "@workspace/api-server",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "uv run --project ../.. python main.py",
+    "build": "uv run --project ../.. python -m compileall main.py",
+    "start": "uv run --project ../.. python main.py"
+  }
+}

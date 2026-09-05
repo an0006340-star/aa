@@ -1,4 +1,7 @@
 {
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
   "compilerOptions": {
     "target": "ES2022",
     "experimentalDecorators": true,
@@ -22,5 +25,16 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "references": [
+    {
+      "path": "./lib/db"
+    },
+    {
+      "path": "./lib/api-client-react"
+    },
+    {
+      "path": "./lib/api-zod"
+    }
+  ]
 }

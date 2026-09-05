@@ -1,0 +1,30 @@
+kind = "api"
+previewPath = "/api"
+title = "Capacity Connect API"
+version = "1.0.0"
+id = "3B4_FFSkEVBkAeYMFRJ2e"
+
+[[services]]
+localPort = 8080
+name = "API Server"
+paths = ["/api", "/health", "/analyze-skills"]
+
+[services.development]
+run = "pnpm --filter @workspace/api-server run dev"
+
+[services.production]
+
+[services.production.build]
+args = ["uv", "run", "--project", ".", "python", "-m", "compileall", "artifacts/api-server/main.py"]
+
+[services.production.build.env]
+NODE_ENV = "production"
+
+[services.production.run]
+args = ["uv", "run", "--project", ".", "python", "artifacts/api-server/main.py"]
+
+[services.production.run.env]
+NODE_ENV = "production"
+
+[services.production.health.startup]
+path = "/health"
