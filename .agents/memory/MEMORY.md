@@ -1,0 +1,2 @@
+- [Gemini model availability](gemini-model-availability.md) — confirm the live API's supported Flash model when a previously valid model is rejected.
+- [GitHub connector writes](github-connector-write-quirk.md) — large or bursty Git data writes can hit Cloudflare; use compact, guarded non-force updates.
